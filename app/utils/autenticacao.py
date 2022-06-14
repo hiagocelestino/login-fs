@@ -6,7 +6,7 @@ import datetime
 
 def realiza_autenticacao():
     import os
-    from decorators.token_required import usuario_por_nome
+    from app.models.usuarios import usuario_por_nome
     
     dados = request.get_json('login')
     login = dados.get('login')

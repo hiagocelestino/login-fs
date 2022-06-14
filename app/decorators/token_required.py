@@ -3,6 +3,8 @@ import jwt
 from flask import request, jsonify
 import os
 
+from app.models.usuarios import usuario_por_nome
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -24,11 +26,3 @@ def token_required(f):
         return f(usuario_atual, *args, **kwargs)
 
     return decorated
-
-
-def usuario_por_nome(nome_usuario):
-    from models.usuarios import Usuario
-    try:
-        return Usuario.query.filter(Usuario.nome == nome_usuario).one()
-    except:
-        return None

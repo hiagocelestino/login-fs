@@ -49,16 +49,6 @@ def select_usuarios():
 
     return jsonify({'mensagem': 'Dados não encontrados'})
 
-
-# def select_usuario(id_usuario):
-#     usuario = Usuario.query.get(id_usuario)
-    
-#     if usuario:
-#         return jsonify(usuario.to_json())
-
-#     return jsonify({'mensagem': 'Usuário não encontrado!'}), 404
-    
-
 def insert_usuario():
     nome = request.json['nome']
     email = request.json['email']
@@ -122,3 +112,8 @@ def delete_usuario(usuario):
         return jsonify({'mensagem': 'Erro ao deletar usuário!'}), 500
 
 
+def usuario_por_nome(nome_usuario):
+    try:
+        return Usuario.query.filter(Usuario.nome == nome_usuario).one()
+    except:
+        return None
