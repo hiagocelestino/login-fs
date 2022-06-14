@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: postgres-app
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - rede-app
+  
+  backend-app:
+    image: hiagocelestino/flask-app
+    container_name: backend-app
+    networks:
+      - rede-app
+    ports:
+      5000:5000
+    depends_on:
+      - postgres
+  
+  frontend-app:
+    image: hiagocelestino/react-app
+    container_name: frontend-app
+    networks:
+      - rede-app
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend-app
+
+networks:
+  compose-bridge:
+    driver: 
+
+volumes:
+  db:
+    driver: local

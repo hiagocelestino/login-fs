@@ -13,6 +13,7 @@ def realiza_autenticacao():
     senha = dados.get('senha')
     
     usuario = usuario_por_nome(login)
+
     if not usuario:
         return jsonify({'mensagem': 'Usuário não encontrado!'})
 
@@ -24,7 +25,7 @@ def realiza_autenticacao():
 
         token = jwt.encode(payload, os.environ.get('SECRET_KEY'), algorithm="HS256")
 
-        return jsonify({'mensagem': 'Validação realizada.', 'user':usuario.to_json(), 'token':token, 'exp': datetime.datetime.now() + datetime.timedelta(hours=12)})
+        return jsonify({'token':token, 'exp': datetime.datetime.now() + datetime.timedelta(hours=12), 'id':usuario.id, 'nome': usuario.nome})
     
     return jsonify({'mensagem': 'Login ou Senha Incorretos!'})
 

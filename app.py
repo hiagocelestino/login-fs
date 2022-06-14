@@ -23,7 +23,7 @@ db = SQLAlchemy(app)
 @token_required
 def root(usuario_atual):
     from flask import jsonify
-    return jsonify({'message': 'Hello world!'})
+    return jsonify({'message': f'Olá, {usuario_atual.nome}'})
 
 
 @app.route('/auth', methods=['POST'])
@@ -31,16 +31,17 @@ def autenticacao():
     from utils.autenticacao import realiza_autenticacao
     return realiza_autenticacao()
 
-@app.route('/usuario', methods=['GET'])
+@app.route('/usuarios', methods=['GET'])
 def get_usuarios():
     from models import usuarios
     return usuarios.select_usuarios()
 
 
-@app.route('/usuario/<id_usuario>', methods=['GET'])
-def get_usuario(id_usuario):
-    from models import usuarios
-    return usuarios.select_usuario(id_usuario)
+@app.route('/usuario', methods=['GET'])
+@token_required
+def get_usuario(usuario_atual):
+    from flask import jsonify
+    return jsonify(usuario_atual.to_json())
 
 
 @app.route('/usuario', methods=['POST'])
@@ -49,19 +50,22 @@ def post_usuario():
     return usuarios.insert_usuario()
 
 
-@app.route('/usuario/<id_usuario>', methods=['PUT'])
-def put_usuario(id_usuario):
+@app.route('/usuario', methods=['PUT'])
+@token_required
+def put_usuario(usuario_atual):
     from models import usuarios
-    return usuarios.update_usuario(id_usuario)
+    print("aqui")
+    return usuarios.update_usuario(usuario_atual)
 
 
-@app.route('/usuario/<id_usuario>', methods=['DELETE'])
-def delete_usuario(id_usuario):
+@app.route('/usuario', methods=['DELETE'])
+@token_required
+def delete_usuario(usuario_atual):
     from models import usuarios
-    return usuarios.delete_usuario(id_usuario)
+    return usuarios.delete_usuario(usuario_atual)
 
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
 

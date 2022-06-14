@@ -9,7 +9,7 @@ def token_required(f):
 
         token = None
         if 'authorization' in request.headers:
-            token = request.headers['authorization']
+            token = request.headers['Authorization']
 
         if not token:
             return jsonify({'mensagem': 'Necessário token de autenticação!'}), 401

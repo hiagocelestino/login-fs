@@ -30,12 +30,11 @@ class Usuario(db.Model):
     def to_json(self):
         return {
             "id": self.id,
-            "nome:": self.nome,
+            "nome": self.nome,
             "email": self.email,
             "cpf": self.cpf,
             "pis": self.pis,
-            "endereco": self.endereco.to_json(),
-            "status": self.status
+            "endereco": self.endereco.to_json()
         }
 
 
@@ -51,13 +50,13 @@ def select_usuarios():
     return jsonify({'mensagem': 'Dados não encontrados'})
 
 
-def select_usuario(id_usuario):
-    usuario = Usuario.query.get(id_usuario)
+# def select_usuario(id_usuario):
+#     usuario = Usuario.query.get(id_usuario)
     
-    if usuario:
-        return jsonify(usuario.to_json())
+#     if usuario:
+#         return jsonify(usuario.to_json())
 
-    return jsonify({'mensagem': 'Usuário não encontrado!'}), 404
+#     return jsonify({'mensagem': 'Usuário não encontrado!'}), 404
     
 
 def insert_usuario():
@@ -88,18 +87,11 @@ def insert_usuario():
         return jsonify({'mensagem': 'Erro no cadastro!'}), 500
 
 
-def update_usuario(id_usuario):
-    usuario = Usuario.query.get(id_usuario)
-
-    if not usuario:
-        return jsonify({'mensagem': 'Usuário não encontrado!'}), 404
-    
+def update_usuario(usuario):
     nome = request.json['nome']
     email = request.json['email']
     cpf = request.json['cpf']
     pis = request.json['pis']
-    senha = request.json['senha']
-    senha_hash = generate_password_hash(senha)
     endereco = request.json['endereco']
 
     try:
@@ -107,7 +99,6 @@ def update_usuario(id_usuario):
         usuario.email = email
         usuario.cpf = cpf
         usuario.pis = pis
-        usuario.senha = senha_hash
         usuario.endereco.pais = endereco.get("pais")
         usuario.endereco.estado = endereco.get("estado")
         usuario.endereco.municipio = endereco.get("municipio")
@@ -122,14 +113,9 @@ def update_usuario(id_usuario):
         return jsonify({'mensagem': 'Erro ao atualizar dados!'}), 500
 
 
-def delete_usuario(id_usuario):
-    usuario = Usuario.query.get(id_usuario)
-
-    if not usuario:
-        return jsonify({'mensagem': 'Usuário não encontrado!'}), 404
-    
+def delete_usuario(usuario):
     try:
-        usuario.status = False
+        db.session.delete(usuario)
         db.session.commit()
         return jsonify({'mensagem': 'Usuário deletado!'})
     except:

@@ -25,7 +25,7 @@ class Endereco(db.Model):
     def to_json(self):
         return {
             "id": self.id,
-            "pais:": self.pais,
+            "pais": self.pais,
             "estado": self.estado,
             "municipio": self.municipio,
             "cep": self.cep,
