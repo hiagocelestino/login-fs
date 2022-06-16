@@ -1,3 +1,4 @@
+from errno import EROFS
 from sqlalchemy import ForeignKey
 from app import db
 from werkzeug.security import generate_password_hash
@@ -10,8 +11,8 @@ class Usuario(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(150), nullable=False)
-    senha = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), nullable=False)
+    senha = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
     cpf = db.Column(db.String(20), unique=True)
     pis = db.Column(db.String(20), unique=True)
     status = db.Column(db.Boolean)
@@ -79,16 +80,10 @@ def insert_usuario():
 
 def update_usuario(usuario):
     nome = request.json['nome']
-    email = request.json['email']
-    cpf = request.json['cpf']
-    pis = request.json['pis']
     endereco = request.json['endereco']
 
     try:
         usuario.nome = nome
-        usuario.email = email
-        usuario.cpf = cpf
-        usuario.pis = pis
         usuario.endereco.pais = endereco.get("pais")
         usuario.endereco.estado = endereco.get("estado")
         usuario.endereco.municipio = endereco.get("municipio")
@@ -111,9 +106,14 @@ def delete_usuario(usuario):
     except:
         return jsonify({'mensagem': 'Erro ao deletar usuário!'}), 500
 
-
-def usuario_por_nome(nome_usuario):
+def realiza_login(login):
     try:
-        return Usuario.query.filter(Usuario.nome == nome_usuario).one()
+        return Usuario.query.filter(Usuario.cpf == login).one()
     except:
-        return None
+        try:
+            return Usuario.query.filter(Usuario.email == login).one()
+        except:
+            try:
+                return Usuario.query.filter(Usuario.pis == login).one()
+            except:
+                return None

@@ -3,7 +3,7 @@ import jwt
 from flask import request, jsonify
 import os
 
-from app.models.usuarios import usuario_por_nome
+from app.models.usuarios import realiza_login
 
 def token_required(f):
     @wraps(f)
@@ -18,7 +18,7 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, os.environ.get("SECRET_KEY"), algorithms=["HS256"])
-            usuario_atual = usuario_por_nome(nome_usuario=data['nome'])
+            usuario_atual = realiza_login(login=data['cpf'])
 
         except:
             return jsonify({'mensagem': 'Token invalido ou expirado!'}), 401
